@@ -5,24 +5,24 @@
 .data
 
 ;------------------------------------------------------------------------------
-; Declaración de cadenas y variables
-msg_Menu db 10, 13, 'Menu', 10, 13, '$'
-msg_Suma db '   1. Suma $'
-msg_Resta db 10,13,'   2. Resta $'
-msg_Multiplicacion db 10,13,'   3. Multiplicacion $'
-msg_Division db 10,13,'   4. Division $'
-msg_Salir db 10,13,'   5. Salir $'
-msg_Opcion db 10,13,'   Seleccione: $'
-msg_PrimerNumero db 10,13,10,13,'Ingrese el primer numero: $'
-msg_SegundoNumero db 10,13,'Ingrese el segundo numero: $'
-msg_Resultado db 10,13,10,13,'El resultado es: $'
-msg_Cerrar db 10,13,10,13,'Finalizado $' 
-msg_Continuar db 10,13,10,13,'Presione ENTER para continuar $'
+; Declaracion de cadenas y variables  
+    msg_Menu db 10, 13, '--------Menu--------', 10, 13, '$'
+    msg_Suma db '   1. Suma $'
+    msg_Resta db 10,13,'   2. Resta $'
+    msg_Multiplicacion db 10,13,'   3. Multiplicacion $'
+    msg_Division db 10,13,'   4. Division $'
+    msg_Salir db 10,13,'   5. Salir $'
+    msg_Opcion db 10,13,'   Seleccione: $'
+    msg_PrimerNumero db 10,13,10,13,'Ingrese el primer numero: $'
+    msg_SegundoNumero db 10,13,'Ingrese el segundo numero: $'
+    msg_Resultado db 10,13,10,13,'El resultado es: $'
+    msg_Cerrar db 10,13,10,13,'Finalizado $' 
+    msg_Continuar db 10,13,10,13,'Presione ENTER para continuar $'
 
-num1 db ?
-num2 db ?
-resultado db ? 
-seleccion  db ?
+    num1 db ?
+    num2 db ?
+    resultado db ? 
+    seleccion  db ?
 
 ;------------------------------------------------------------------------------
 ; Carga de la direccion de la base
@@ -33,7 +33,8 @@ mov ds, ax
 ;------------------------------------------------------------------------------
 ; Etiqueta para el menu
 menu:
-    ; Imprimir el menu
+    ; Imprimir el menu 
+    
     lea dx, msg_Menu
     mov ah, 9
     int 21h
@@ -110,8 +111,9 @@ Op_Suma:
     sub al, 48
     mov num2, al
 
-    ; Realizar la suma
-    add al, num1
+    ; Realizar la suma 
+    mov al,num1
+    add al, num2
     mov ah, 0
     aaa
 
@@ -178,12 +180,22 @@ Op_Resta:
     int 21h 
     sub al, 48
     mov num2, al
+     
+    ; Ajustar y convertir a caracteres   \ bh representa el valor mas significativo de el bx y bl el menos significativo
+    mov bx, ax
+    add bh, 48
+    add bl, 48 
+    add num1, 48
+    add num2, 48 
+    
 
     ; Realizar la resta
     mov al,num1
-    sub al,num2
+    sub al,num2 
+    mov ah, 0
+    aaa
     
-    ; Ajustar y convertir a caracteres   \ bh representa el valor mas significativo de el bx y bl el menos significativo
+    ; Ajustar y convertir a caracteres 
     mov bx, ax
     add bh, 48
     add bl, 48 
@@ -193,11 +205,28 @@ Op_Resta:
     mov ah, 9
     int 21h
 
-    ;Resultado final
+    ;Resultado final 
+    
+     mov ah, 2  
+    mov dl, num1
+    int 21h 
+    
+    mov ah, 2  
+    mov dl, '-'
+    int 21h
+    
+    mov ah, 2  
+    mov dl, num2
+    int 21h 
+    
+    mov ah, 2  
+    mov dl, '='
+    int 21h 
+    
     mov ah, 2
     mov dl, bh
     int 21h 
-    
+        
     mov ah, 2
     mov dl, bl
     int 21h
@@ -205,7 +234,7 @@ Op_Resta:
     jmp regresar
 
 ;------------------------------------------------------------------------------
-; Función de Multiplicación
+; Funcion de Multiplicacion
 Op_Multiplicacion:
     ; Entrada de datos
     lea dx, msg_PrimerNumero
@@ -228,20 +257,38 @@ Op_Multiplicacion:
 
     ; Operacion de multiplicacion
     mul num1
-    mov resultado, al
     aam
 
     ; Ajustar y convertir a caracteres
-    add ah, 48
-    add al, 48
     mov bx, ax
+    add bh, 48
+    add bl, 48 
+    add num1, 48
+    add num2, 48 
 
     ; Imprimir el resultado
     lea dx, msg_Resultado 
     mov ah, 9
     int 21h
 
-    ; Imprimir el resultado en dos partes
+    ; Imprimir el resultado en dos partes 
+    
+    mov ah, 2  
+    mov dl, num1
+    int 21h 
+    
+    mov ah, 2  
+    mov dl, 'x'
+    int 21h
+    
+    mov ah, 2  
+    mov dl, num2
+    int 21h 
+    
+    mov ah, 2  
+    mov dl, '='
+    int 21h
+    
     mov ah, 2
     mov dl, bh
     int 21h
@@ -265,7 +312,7 @@ Op_Division:
     sub al, 48
     mov num1, al
 
-    ; Entrada del segundo numero
+    ; Entrada del s  egundo numero
     lea dx, msg_SegundoNumero 
     mov ah, 9
     int 21h
@@ -276,31 +323,44 @@ Op_Division:
     mov num2, al
 
     ; Realizar la division
-    mov cl, num1
-    mov ax, cx
+    mov al, num1
+    xor ah, ah        
     div num2
     mov resultado, al
-    mov ah, 00
-    aad
 
     ; Ajustar y convertir a caracteres
-    add ah, 48
-    add al, 48
-    mov bx, ax
+    add resultado, 48 
+    add num1, 48
+    add num2, 48
+    
 
     ; Imprimir el resultado
     lea dx, msg_Resultado 
     mov ah, 9
     int 21h
 
-    ; Imprimir el resultado en dos partes
-    mov ah, 2
-    mov dl, bh
+    ; Imprimir el resultado en dos partes   
+    
+    mov ah, 2  
+    mov dl, num1
+    int 21h 
+    
+    mov ah, 2  
+    mov dl, '/'
     int 21h
-
-    mov ah, 2
-    mov dl, bl
+    
+    mov ah, 2  
+    mov dl, num2
+    int 21h 
+    
+    mov ah, 2  
+    mov dl, '='
     int 21h
+    
+    mov ah, 2
+    mov dl, resultado
+    int 21h
+    
     jmp regresar
 ;------------------------------------------------------------------------------
 ; Funcion de Salida
